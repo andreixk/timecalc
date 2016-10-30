@@ -2,7 +2,9 @@
 
 A work hours/time calculator built with VueJS
 
-Calculates hours worked.
+[demo](http://apps.utype.ca/time/)
+
+Calculates number of hours per day and sums several days to display a total number of hours.
 
 Can accept inputs in various formats:
 
