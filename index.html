@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TimeCalc - Time Calculator</title>
+	<link rel="shortcut icon" href="assets/img/icon_128.png" type="image/png" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+	<meta name="description" content="TimeCalc - Calculate the number of hours you spent at your work or in the office!"/>
+	<META NAME="keywords" CONTENT="time clock, time calculator, hours calculator, hours tracker"/>
+
+	<link href='http://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700' rel='stylesheet' type='text/css'/>
+	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+	<style type="text/css">
+		* {
+			font-family:'Roboto' verdana sans-serif;
+			font-weight:300;
+		}
+		html {
+			width:100%; height:100%;
+		}
+		body {
+			width:100%; height: 100%;
+			background-image: -webkit-linear-gradient(bottom left,  rgba(43, 90, 50, 0.8) 0%, rgba(83, 106, 99, 0.8) 45%, rgba(99, 97, 91, 0.6) 60%);
+			background-image: 	 -moz-linear-gradient(bottom left,  rgba(43, 90, 50, 0.8) 0%, rgba(83, 106, 99, 0.8) 45%, rgba(99, 97, 91, 0.6) 60%);
+			background-image: 	   -o-linear-gradient(bottom left,  rgba(43, 90, 50, 0.8) 0%, rgba(83, 106, 99, 0.8) 45%, rgba(99, 97, 91, 0.6) 60%);
+			background-image: 		  linear-gradient(to top right, rgba(43, 90, 50, 0.8) 0%, rgba(83, 106, 99, 0.8) 45%, rgba(99, 97, 91, 0.6) 60%);
+			background-attachment: fixed;
+		}
+		body:after {
+			content: '';
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			z-index: -1;
+			top:0;
+			left:0;
+			background-image: -webkit-linear-gradient(289deg, rgba(43,80,50,0.8) 0%, rgba(43,90,50,0.4) 36%, rgba(0,0,0,0.05) 60%);
+			background-image: 	 -moz-linear-gradient(289deg, rgba(43,80,50,0.8) 0%, rgba(43,90,50,0.4) 36%, rgba(0,0,0,0.05) 60%);
+			background-image: 	   -o-linear-gradient(289deg, rgba(43,80,50,0.8) 0%, rgba(43,90,50,0.4) 36%, rgba(0,0,0,0.05) 60%);
+			background-image: 		  linear-gradient(-19deg, rgba(43,80,50,0.8) 0%, rgba(43,90,50,0.4) 36%, rgba(0,0,0,0.05) 60%);			
+		}
+		.day {
+			background:rgba(0,0,0,0.3);
+			margin: 10px 0;
+			padding: 30px;
+			text-align:center;
+		}
+		.hours {
+			display:inline-block;
+			color:#fff;
+			min-width:115px;
+		}
+		.hr-nrm {
+			background:#bbb;
+			padding:5px;
+			border-radius:8px 8px 0 0;
+			display:block;
+			font-size:18px;
+			letter-spacing: 2px;
+			color:#eef;
+		}
+		.hr-dec {
+			color:#8B94AA;
+			padding:5px;
+			font-size:30px;
+			display:block;
+			border-radius: 0 0 8px 8px;
+			background-color: #fff;
+		}
+		.hr-dec:after {
+			content:' hr';
+			font-size:16px;
+		}
+		form>div {
+			margin-top:5px;
+		}
+		form input{
+			border:0px;
+			border-radius:4px;
+			padding:6px 12px;
+			max-width:100%;
+		}
+		form input:focus {
+			outline:none;
+		}
+		.centered {
+			width:100%;
+			text-align:center;
+		}
+		.footer {
+			color:#bbb;
+			font-size:16px;
+		}
+	</style>
+</head>
+<body>
+<div class="centered">
+	<script type="text/javascript">
+	    google_ad_client = "ca-pub-2347505978372962";
+	    google_ad_slot = "4100959492";
+	    google_ad_width = 320;
+	    google_ad_height = 50;
+	</script>
+	<!-- time-keeper -->
+	<script type="text/javascript" src="//pagead2.googlesyndication.com/pagead/show_ads.js">
+	</script>			
+</div>
+	
+<div id="app">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				For previous version go <a href="../" title="">here</a>
+			</div>
+		</div>
+		<div v-for="(day,dayNum) in days" class="day row">
+			<form class="form-inline" @submit.prevent="days.push({tin:'',tout:''})">
+				<div class="col-md-1">
+					<a v-if="days.length>1" @click="days.splice(dayNum,1)" class="btn btn-danger"><i class="glyphicon glyphicon-minus"></i></a>
+				</div>
+				<div class="col-md-1">
+					<div class="hours">
+						<span class="hr-nrm">{{fmtHours(calcHours(day))}}</span>
+						<span class="hr-dec">{{calcHours(day).round(2)}}</span>
+					</div>
+				</div>
+				<div class="col-md-2 col-md-offset-1">
+					<input v-model="day.tin" type="text" placeholder="Time In (HH:MM)">
+				</div>
+				<div class="col-md-2">
+					<input v-model="day.tout" type="text" placeholder="Time Out (HH:MM)">
+					<span v-show="day.tout != '' && day.tin != '' && toHR(day.tin)>toHR(day.tout)" class="label label-danger">next day {{fmtHours(toHR(day.tout))}}</span>
+				</div>
+				<div v-if="day.lin != undefined" class="col-md-2">
+					<input v-model="day.lin" type="text" placeholder="Lunch Start (HH:MM)">
+				</div>
+				<div v-if="day.lin != undefined" class="col-md-2">
+					<input v-model="day.lout" type="text" placeholder="Lunch End (HH:MM)">
+					<span v-show="day.lout != '' && day.lin != '' && toHR(day.lin)>toHR(day.lout)" class="label label-danger">next day {{fmtHours(toHR(day.lout))}}</span>
+				</div>
+				<div v-if="day.lin == undefined" class="col-md-2">
+					<a class="btn btn-success" @click="addLunch(dayNum)"><i class="glyphicon glyphicon-plus"></i> Lunch Break</a>
+				</div>
+				<div v-if="dayNum == days.length-1" class="pull-right">
+					<button class="btn btn-info" @click="days.push({tin:'',tout:''})"><i class="glyphicon glyphicon-plus"></i>Day</button>
+				</div>
+			</form>
+		</div>
+		<div class="day row">
+			<div class="col-xs-12">
+				<div class="hours">
+					<span class="hr-nrm">{{fmtHours(totalHours)}}</span>
+					<span class="hr-dec">{{totalHours.round(2)}}</span>
+				</div>
+			</div>
+		</div>
+		<div class="footer centered">
+			View source or Report bugs: <a href="https://github.com/andreixk/timecalc" title="Github TimeCalc"><img src="assets/img/github.png" alt="github"></a>
+		</div>
+	</div>
+</div>
+<script src="assets/js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/js/time.js" defer> </script>
+</body>
+</html>
